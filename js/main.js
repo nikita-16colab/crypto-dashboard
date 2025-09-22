@@ -25,7 +25,26 @@ const cryptocurrencies = [
         change_24h: -0.8
     }
 ];
+function displayCryptoCards(cryptos) {
+    container.innerHTML = ''; // Очищаем контейнер перед добавлением новых карточек
+    cryptos.forEach(crypto => {
+        const card = createCryptoCard(crypto);
+        container.appendChild(card);
+    });
+}
 
+// Изначальный вызов, чтобы показать все карточки
+displayCryptoCards(cryptocurrencies);
+
+const searchInput = document.getElementById('search-input');
+
+searchInput.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const filteredCryptos = cryptocurrencies.filter(crypto => {
+        return crypto.name.toLowerCase().includes(searchTerm) || crypto.symbol.toLowerCase().includes(searchTerm);
+    });
+    displayCryptoCards(filteredCryptos);
+});
 // Функция, которая будет создавать карточку для каждой криптовалюты
 function createCryptoCard(crypto) {
     // Создаем новый HTML-элемент <div>
@@ -50,7 +69,39 @@ function createCryptoCard(crypto) {
 const container = document.getElementById('crypto-cards-container');
 
 // Проходимся по каждому элементу в нашем массиве и добавляем его на страницу
-cryptocurrencies.forEach(crypto => {
+displayCryptoCards(cryptocurrencies)(crypto => {
     const card = createCryptoCard(crypto);
     container.appendChild(card);
 });
+const chartData = {
+    labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+    datasets: [{
+        label: 'Цена Bitcoin (BTC)',
+        data: [65000, 65500, 65300, 66000, 65800, 66200, 65900],
+        borderColor: '#007bff',
+        backgroundColor: 'rgba(0, 123, 255, 0.2)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+    }]
+};
+
+const ctx = document.getElementById('price-chart').getContext('2d');
+
+const priceChart = new Chart(ctx, {
+    type: 'line',
+    data: chartData,
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: false,
+                title: {
+                    display: true,
+                    text: 'Цена ($)'
+                }
+            }
+        }
+    }
+}); 
